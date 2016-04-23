@@ -11,9 +11,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Teetris
 {
-    class ControllerDetectScreen : Screen
+    class GameScreen : Screen
     {
-        public ControllerDetectScreen(ContentManager contentManager, EventHandler theScreenEvent) : base(theScreenEvent)
+        public GameScreen(ContentManager contentManager, EventHandler theScreenEvent) : base(theScreenEvent)
         {
             //hier werden dann die Assets reingeladen
         }

@@ -11,11 +11,17 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Teetris
 {
+
+
     class GameScreen : Screen
     {
+        Texture2D block;
+
         public GameScreen(ContentManager contentManager, EventHandler theScreenEvent) : base(theScreenEvent)
-        {
+        {           
             //hier werden dann die Assets reingeladen
+            block = contentManager.Load<Texture2D>("yellowBlock");
+
         }
     }
 }

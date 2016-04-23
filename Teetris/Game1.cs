@@ -16,7 +16,11 @@ namespace Teetris
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = 480;
+            graphics.ApplyChanges();
+
+            Content.RootDirectory = "Content";         
         }
 
         public void GameScreenEvent(object obj, EventArgs e)
@@ -26,7 +30,7 @@ namespace Teetris
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            
 
             base.Initialize();
         }
@@ -36,7 +40,7 @@ namespace Teetris
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            mGameScreen = new GameScreen(this.Content, new EventHandler(GameScreenEvent));
+            mGameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent));
 
             mCurrentScreen = mGameScreen;
         }

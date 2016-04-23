@@ -20,7 +20,7 @@ namespace Teetris
         public TetrisBox(Texture2D[] blockTextures)
         {
             BlockTextures = blockTextures;
-            Field[0, 0] = 1;
+            Field[0, 0] = 3;
         }
 
         public void CreateTetrominos()
@@ -58,7 +58,7 @@ namespace Teetris
                             }
                         case 3:
                             {
-                                spriteBatch.Draw(BlockTextures[2], new Rectangle(i, j, 32, 32), Color.White);
+                                spriteBatch.Draw(BlockTextures[2], new Rectangle(i,678 - j, 32, 32), Color.White);
                                 break;
                             }
                         case 4:

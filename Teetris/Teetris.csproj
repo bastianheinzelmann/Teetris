@@ -42,6 +42,7 @@
     <Compile Include="GameStateManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen.cs" />
     <Compile Include="TetrisBox.cs" />
   </ItemGroup>
   <ItemGroup>

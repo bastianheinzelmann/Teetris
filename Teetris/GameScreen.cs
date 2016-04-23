@@ -15,13 +15,25 @@ namespace Teetris
 
     class GameScreen : Screen
     {
-        Texture2D block;
+        Texture2D[] BlockTextures = new Texture2D[4];
+
+        TetrisBox TheTetrisBox;
 
         public GameScreen(ContentManager contentManager, EventHandler theScreenEvent) : base(theScreenEvent)
-        {           
-            //hier werden dann die Assets reingeladen
-            block = contentManager.Load<Texture2D>("yellowBlock");
+        {         
+            BlockTextures[0] = contentManager.Load<Texture2D>("yellowBlock");
+            BlockTextures[1] = contentManager.Load<Texture2D>("blueBlock");
+            BlockTextures[2] = contentManager.Load<Texture2D>("greenBlock");
+            BlockTextures[3] = contentManager.Load<Texture2D>("redBlock");
 
+            TheTetrisBox = new TetrisBox(BlockTextures);
+        }
+
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            TheTetrisBox.Draw(spriteBatch);
+
+            base.Draw(spriteBatch);
         }
     }
 }

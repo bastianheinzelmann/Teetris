@@ -8,10 +8,24 @@ namespace Teetris
     {
         private Texture2D BlockTex;
         private Rectangle Rect;
+        private int Size;
 
-        public void Draw(Texture2D texture, int size, SpriteBatch spriteBatch)
+        public void SetPosition(int x, int y)
         {
+            Rect.X = x;
+            Rect.Y = y;
+        }
 
+        public Block(Texture2D texture, int size, Rectangle rect)
+        {
+            BlockTex = texture;
+            Rect = rect;
+            Size = size;
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(BlockTex, Rect, Color.White);
         }
     }
 

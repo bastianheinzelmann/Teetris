@@ -37,8 +37,12 @@
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Block.cs" />
+    <Compile Include="Cell.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />

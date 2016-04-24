@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
@@ -7,74 +9,186 @@ namespace Teetris
 {
     class TetrisBox
     {
-        private const int BoxSizeY = 22; //Größe des Spielfeldes
+        private int ScreenResX = 480;   //Bildschirmauflösung
+        private int ScreenResY = 720;
+
+        private const int BoxSizeY = 20; //Größe des Spielfeldes
         private const int BoxSizeX = 10;
 
-        private int[,] Field = new int[BoxSizeX, BoxSizeY];
-        //private Block[,] GameBox = new Block[BoxSizeX, BoxSizeY];
+        private Cell[,] Status = new Cell[BoxSizeX,BoxSizeY];
+
 
         private Texture2D[] BlockTextures;
 
-        private int BlockSize = 32; //Größe der Blöcke in Pixeln
+        private int BlockSize = 32; //Größe der Blöcke in Pixel
+
+        private int CoolDown = 0;
 
         public TetrisBox(Texture2D[] blockTextures)
         {
             BlockTextures = blockTextures;
-            Field[0, 0] = 3;
+            //Field[0, 0] = 3;
+            CreateTetrominos();
         }
 
         public void CreateTetrominos()
         {
+            Random rnd = new Random();
+            int whichTetromino = rnd.Next(0, 7);
+            int color = rnd.Next(1, 5);
 
-        }
+            Console.WriteLine(whichTetromino);
 
-        public void HolyShit()
-        {
-
-        }
-
-        public void Update(GameTime gameTime)
-        {
-
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            for(int i = 0; i < Field.GetLength(0); i++)
+            switch(whichTetromino)
             {
-                for(int j = 0; j < Field.GetLength(1); j++)
-                {
-                    switch (Field[i,j])
+                case 0:
                     {
-                        case 1:
-                            {
-                                spriteBatch.Draw(BlockTextures[0], new Rectangle(i,j, 32,32), Color.White);
-                                break;
-                            }
-                        case 2:
-                            {
-                                spriteBatch.Draw(BlockTextures[1], new Rectangle(i, j, 32, 32), Color.White);
-                                break;
-                            }
-                        case 3:
-                            {
-                                spriteBatch.Draw(BlockTextures[2], new Rectangle(i,678 - j, 32, 32), Color.White);
-                                break;
-                            }
-                        case 4:
-                            {
-                                spriteBatch.Draw(BlockTextures[3], new Rectangle(i, j, 32, 32), Color.White);
-                                break;
-                            }
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
+                        break;
+                    }
+
+                case 1:
+                    {
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
+                        break;
+                    }
+                case 2:
+                    {
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 3] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 3] = new Cell(color, true, false);
+                        break;
+                    }
+                case 3:
+                    {
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 3] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 3] = new Cell(color, true, false);
+                        break;
+                    }
+                case 4:
+                    {
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 3] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 4] = new Cell(color, true, false);
+                        break;
+                    }
+                case 5:
+                    {
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
+                        break;
+                    }
+            }
+
+        }
+
+        public void DrawCells(SpriteBatch spriteBatch, Texture2D texture, int x, int y)
+        {
+            spriteBatch.Draw(texture, new Rectangle(x * BlockSize + 10, ScreenResY - BlockSize - 10 - y * BlockSize, BlockSize, BlockSize), Color.White);
+        }
+
+        private void deactivateAll()
+        {
+            int counter = 0;
+
+            foreach (Cell cell in Status)
+            {
+                if (cell != null)
+                {
+                    if (cell.active)
+                    {
+                        cell.active = false;
+                        counter++;
+                    }
+                    if (counter >= 4)
+                        return;
+                }
+            }
+        }
+
+        public void CheckActiveCells()
+        {
+            for (int i = 0; i < Status.GetLength(0); i++)
+            {
+                for (int j = 0; j < Status.GetLength(1); j++)
+                {
+                    if (Status[i,j] != null)
+                    {
+                        if(Status[i, j].active && j <= 0)
+                        {
+                            deactivateAll();
+                        }
+
+                        if (Status[i, j].active)
+                        {
+                            Cell tempCell = Status[i, j];
+                            Status[i, j] = null;
+                            Status[i, j - 1] = tempCell;
+                        }
                     }
                 }
             }
+        }
 
-            //foreach(Block block in GameBox)
-            //{
-            //    if(block != null)
-            //        block.Draw(spriteBatch);
-            //}
+
+        public void Update(GameTime gameTime)
+        {
+            CoolDown += gameTime.ElapsedGameTime.Milliseconds;
+            if(CoolDown >= 500)
+            {
+                CheckActiveCells();
+                CoolDown = 0;
+            }          
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {            
+            for (int i = 0; i < Status.GetLength(0); i++)
+            {
+                for (int j = 0; j < Status.GetLength(1); j++)
+                {
+                    #region ColorSwitch
+                    if(Status[i,j] != null)
+                    {
+                        switch (Status[i, j].color)
+                        {
+                            case 1:
+                                {
+                                    DrawCells(spriteBatch, BlockTextures[0], i, j);
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    DrawCells(spriteBatch, BlockTextures[1], i, j);
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    DrawCells(spriteBatch, BlockTextures[2], i, j);
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    DrawCells(spriteBatch, BlockTextures[3], i, j);
+                                    break;
+                                }
+                        }
+                    }
+                    #endregion ColorSwitch
+                }
+            }
         }
     }
 }

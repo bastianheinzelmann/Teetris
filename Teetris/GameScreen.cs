@@ -16,6 +16,7 @@ namespace Teetris
     class GameScreen : Screen
     {
         Texture2D[] BlockTextures = new Texture2D[4];
+        Texture2D BackGround;
 
         TetrisBox TheTetrisBox;
 
@@ -26,11 +27,21 @@ namespace Teetris
             BlockTextures[2] = contentManager.Load<Texture2D>("greenBlock");
             BlockTextures[3] = contentManager.Load<Texture2D>("redBlock");
 
+            BackGround = contentManager.Load<Texture2D>("tetBack");
+
             TheTetrisBox = new TetrisBox(BlockTextures);
+        }
+
+        public override void Update(GameTime theTime)
+        {
+            TheTetrisBox.Update(theTime);
+
+            base.Update(theTime);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            spriteBatch.Draw(BackGround, new Rectangle(10, 6 + 2 * 32, 32 * 10, 32 * 20), Color.White);
             TheTetrisBox.Draw(spriteBatch);
 
             base.Draw(spriteBatch);

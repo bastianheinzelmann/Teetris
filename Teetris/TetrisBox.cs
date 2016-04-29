@@ -23,6 +23,13 @@ namespace Teetris
 
         private int CoolDown = 0;
 
+        //Input
+        KeyboardState kb;
+        KeyboardState old_kb;
+
+        private Vector2 CurrentTetroCenter;
+        private Vector2[] CurrentBrickPos = new Vector2[4];
+
         //---------GamePlayStuff
 
         private bool landed = false;
@@ -40,7 +47,9 @@ namespace Teetris
             int whichTetromino = rnd.Next(0, 7);
             int color = rnd.Next(1, 5);
 
-            Console.WriteLine(whichTetromino);
+            whichTetromino = 2;
+
+            //Console.WriteLine(whichTetromino);
 
             #region SwitchTetrominos
 
@@ -72,6 +81,7 @@ namespace Teetris
                         Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
                         Status[BoxSizeX / 2 - 1, BoxSizeY - 3] = new Cell(color, true, false);
                         Status[BoxSizeX / 2, BoxSizeY - 3] = new Cell(color, true, false);
+                        CurrentTetroCenter = new Vector2(BoxSizeX / 2, BoxSizeY - 3);
                         break;
                     }
                 case 3:
@@ -142,13 +152,24 @@ namespace Teetris
 
         public void CheckActiveCells()
         {
+            int brickCounter = 0;
+
             for (int y = 0; y < Status.GetLength(1); y++)
             {
                 for (int x = 0; x < Status.GetLength(0); x++)
                 {
                     if (Status[x,y] != null)
                     {
-                        if(Status[x, y].active && y <= 0)
+
+                        //Save positions of bricks in a Vector2
+                        if (Status[x, y].active)
+                        {
+                            CurrentBrickPos[brickCounter] = new Vector2(x, y);
+                            brickCounter++;
+                        }
+
+                        // hit the ground
+                        if (Status[x, y].active && y <= 0)
                         {
                             deactivateAll();
                             landed = true;
@@ -156,7 +177,6 @@ namespace Teetris
                         }
 
                         // land on other Block
-
                         if (y > 0)
                         {
                             if (Status[x, y - 1] != null)
@@ -170,6 +190,8 @@ namespace Teetris
                             }
                         }
 
+                        
+
                         //if (Status[x, y].active)
                         //{
                         //    Cell tempCell = Status[x, y];
@@ -182,28 +204,67 @@ namespace Teetris
                 }
             }
 
-            for (int y = 0; y < Status.GetLength(1); y++)
+            for(int i = 0; i < 4; i++)
             {
-                for (int x = 0; x < Status.GetLength(0); x++)
-                {
-                    if (Status[x,y] != null)
-                    {                       
-                        if (Status[x, y].active)
-                        {
-                            Cell tempCell = Status[x, y];
-                            Status[x, y] = null;
-                            Status[x, y - 1] = tempCell;
-                        }                   
-                    }
-                }
+                Cell tempCell = Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y];
+                Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = null;
+                Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y - 1] = tempCell;
+                CurrentBrickPos[i].y--;
             }
 
-            
+            //for (int y = 0; y < Status.GetLength(1); y++)
+            //{
+            //    for (int x = 0; x < Status.GetLength(0); x++)
+            //    {
+            //        if (Status[x,y] != null)
+            //        {                       
+            //            if (Status[x, y].active)
+            //            {
+            //                Cell tempCell = Status[x, y];
+            //                Status[x, y] = null;
+            //                Status[x, y - 1] = tempCell;
+            //            }                   
+            //        }
+            //    }
+            //}
+
+            CurrentTetroCenter.y--;
         }
 
+        public void Rotate()
+        {
+            CoolDown = 0;
+            Console.WriteLine("Rororororotation");
+            Cell tempCell = Status[CurrentBrickPos[0].x, CurrentBrickPos[0].y];
+
+            for (int i = 0; i < 4; i++)
+            {
+                //Let's erase the old brickPos
+                //Cell tempCell = Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y];
+                Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = null;
+
+                //Thats some weird unoptimized math :/
+                CurrentBrickPos[i] = CurrentBrickPos[i] - CurrentTetroCenter;
+                int xTemp = CurrentBrickPos[i].x;
+                CurrentBrickPos[i].x = CurrentBrickPos[i].y;
+                CurrentBrickPos[i].y = xTemp * -1;
+                CurrentBrickPos[i] = CurrentBrickPos[i] + CurrentTetroCenter;
+
+                //here we go: the new BrickPos... i hope at least
+                //Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y];
+            }
+
+            foreach (Vector2 brick in CurrentBrickPos)
+            {
+                Status[brick.x, brick.y] = tempCell;
+            }
+
+        }
 
         public void Update(GameTime gameTime)
         {
+            kb = Keyboard.GetState();
+
             CoolDown += gameTime.ElapsedGameTime.Milliseconds;
             if(CoolDown >= 500)
             {
@@ -214,9 +275,17 @@ namespace Teetris
             {
                 CreateTetrominos();
                 landed = false;
-            }   
-                  
+            }
+            
+            if(KeyPressed(Keys.Up))
+            {
+                Rotate();
+            }
+
+            old_kb = kb;    
         }
+
+        bool KeyPressed(Keys key) { return kb.IsKeyDown(key) && old_kb.IsKeyUp(key); }
 
         public void Draw(SpriteBatch spriteBatch)
         {            

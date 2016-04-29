@@ -7,7 +7,7 @@ namespace Teetris
         public bool active;
         public bool occupied;
 
-        public Cell (int col, bool act, bool occ)
+        public Cell(int col, bool act, bool occ)
         {
             color = col;
             active = act;
@@ -15,15 +15,25 @@ namespace Teetris
         }
     }
 
-    public struct Tuple
+    public struct Vector2
     {
         public int x;
         public int y;
 
-        public Tuple(int X,int Y)
+        public Vector2(int X, int Y)
         {
             x = X;
             y = Y;
+        }
+
+        public static Vector2 operator +(Vector2 v1, Vector2 v2)
+        {
+            return new Vector2(v1.x + v2.x, v1.y + v2.y);
+        }
+
+        public static Vector2 operator -(Vector2 v1, Vector2 v2)
+        {
+            return new Vector2(v1.x - v2.x, v1.y - v2.y);
         }
     }
 }

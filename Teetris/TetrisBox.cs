@@ -78,10 +78,10 @@ namespace Teetris
                 case 2:
                     {
                         //L
-                        Status[BoxSizeX / 2 - 2, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 2);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2, BoxSizeY - 1);
                         CurrentTetroCenter = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
                         break;
                     }

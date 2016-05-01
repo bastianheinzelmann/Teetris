@@ -31,6 +31,9 @@ namespace Teetris
         private Vector2 CurrentTetroCenter;
         private Vector2[] CurrentBrickPos = new Vector2[4];
 
+        private int CurrentTetromino;
+        private int CurrentRotationState; //only important for I-Tetro, because its f****** symmetry
+
         //---------GamePlayStuff
 
         private bool landed = false;
@@ -48,7 +51,8 @@ namespace Teetris
             int whichTetromino = rnd.Next(0, 7);
             int color = rnd.Next(1, 5);
 
-            whichTetromino = 2;
+            whichTetromino = 4;
+            CurrentTetromino = whichTetromino;
 
             //Console.WriteLine(whichTetromino);
 
@@ -59,20 +63,21 @@ namespace Teetris
                 case 0:
                     {
                         //T
-                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 3] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 + 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2 + 1, BoxSizeY - 2);
+                        CurrentTetroCenter = new Vector2(BoxSizeX / 2, BoxSizeY - 2); new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 1);
                         break;
                     }
 
                 case 1:
                     {
                         //O
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 1);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2, BoxSizeY - 2);
                         break;
                     }
                 case 2:
@@ -88,37 +93,42 @@ namespace Teetris
                 case 3:
                     {
                         //L (inverted)
-                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 3] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 3] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 - 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 2);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2 , BoxSizeY - 2);
+                        CurrentTetroCenter = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
                         break;
                     }
                 case 4:
                     {
                         //I
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 3] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 4] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 1);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 + 1, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2 + 1, BoxSizeY - 1);
+                        //CurrentTetroCenter = new Vector2(BoxSizeX / 2, BoxSizeY - 1); new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 1);
+                        CurrentRotationState = 0;
                         break;
                     }
                 case 5:
                     {
                         //Z
-                        Status[BoxSizeX / 2 - 2, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 1);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2, BoxSizeY - 2);
+                        CurrentTetroCenter = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
                         break;
                     }
                 case 6:
                     {
                         //Z (inverted)
-                        Status[BoxSizeX / 2 + 1, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false);
-                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false);
+                        Status[BoxSizeX / 2 - 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 2);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
+                        Status[BoxSizeX / 2 - 1, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 1);
+                        Status[BoxSizeX / 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2, BoxSizeY - 1);
+                        CurrentTetroCenter = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
                         break;
                     }
             }
@@ -190,16 +200,6 @@ namespace Teetris
                                 }
                             }
                         }
-
-                        
-
-                        //if (Status[x, y].active)
-                        //{
-                        //    Cell tempCell = Status[x, y];
-                        //    Status[x, y] = null;
-                        //    Status[x, y - 1] = tempCell;
-                        //}
-
                         //------------------end                        
                     }
                 }
@@ -217,11 +217,198 @@ namespace Teetris
             CurrentTetroCenter.y--;
         }
 
+        bool rotationCollisionCheck()
+        {
+            if (CurrentTetromino == 4)
+                return true;
+
+            int centreX = CurrentTetroCenter.x;
+            int CentreY = CurrentTetroCenter.y;
+
+            for (int i = -1; i < 2; i++)
+            {
+                for (int j = -1; j < 2; j++)
+                {
+                    if (centreX + i < 0 || centreX + i > 9 || CentreY + j > 22 || CentreY + j < 0)
+                        return false;
+                
+
+                    if (Status[centreX + i, CentreY + j] != null)
+                        if (!Status[centreX + i, CentreY + j].active)
+                            return false;
+                }
+            }
+
+            return true;
+        }
+
+        bool IrotationCollisionCheck(int centreX, int centreY)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j > -4; j--)
+                {
+                    if (centreX + i < 0 || centreX + i > 9 || centreY + j > 22 || centreY + j < 0)
+                        return false;
+
+
+                    if (Status[centreX + i, centreY + j] != null)
+                        if (!Status[centreX + i, centreY + j].active)
+                            return false;
+                }
+            }
+
+            return true;
+        }
+
+        void IRotation()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = null;
+            }
+        }
+
+        #region SortAlgos
+        void sortBricksX()
+        {
+            int min;
+            for (int i = 0; i < 4; i++)
+            {
+                min = i;
+                for (int j = i; j < 4; j++)
+                {
+                    if (CurrentBrickPos[j].x < CurrentBrickPos[min].x)
+                    {
+                        min = j;
+                    }
+                }
+                Vector2 temp = CurrentBrickPos[i];
+                CurrentBrickPos[i] = CurrentBrickPos[min];
+                CurrentBrickPos[min] = temp;   
+            }
+        }
+
+        void sortBricksY()
+        {
+            int min;
+            for (int i = 0; i < 4; i++)
+            {
+                min = i;
+                for (int j = i; j < 4; j++)
+                {
+                    if (CurrentBrickPos[j].y < CurrentBrickPos[min].y)
+                    {
+                        min = j;
+                    }
+                }
+                Vector2 temp = CurrentBrickPos[i];
+                CurrentBrickPos[i] = CurrentBrickPos[min];
+                CurrentBrickPos[min] = temp;
+            }
+        }
+        #endregion SortAlgos
+
+
         public void Rotate()
         {
-            //CoolDown = 0;
-            Console.WriteLine("Rororororotation");
+            foreach (Vector2 brick in CurrentBrickPos)
+            {
+                if (brick.y >= BoxSizeY - 2)
+                    return;
+            }
+
+            if (!rotationCollisionCheck())
+                return;
+
             Cell tempCell = Status[CurrentBrickPos[0].x, CurrentBrickPos[0].y];
+
+            //if currentTetro is the O-Brick
+            if (CurrentTetromino == 1)
+                return;
+
+            //if currentTetro is the I-Brick
+            if (CurrentTetromino == 4)
+            {
+                #region IRotation
+                switch (CurrentRotationState)
+                {
+                    case 0:
+                        //transmission to state 1
+                        sortBricksX();
+                        if (!IrotationCollisionCheck(CurrentBrickPos[0].x, CurrentBrickPos[0].y + 1))
+                            return;
+                        IRotation();
+                        CurrentBrickPos[0] += new Vector2(2, 1);
+                        CurrentBrickPos[1] += new Vector2(1, 0);
+                        CurrentBrickPos[2] += new Vector2(0, -1);
+                        CurrentBrickPos[3] += new Vector2(-1, 2);
+
+                        foreach (Vector2 brick in CurrentBrickPos)
+                        {
+                            Status[brick.x, brick.y] = tempCell;
+                        }
+                        CurrentRotationState++;
+                        return;
+                    //break;
+                    case 1:
+                        //transmission to state 2                       
+                        sortBricksY();
+                        bool flag = IrotationCollisionCheck(CurrentBrickPos[0].x - 2, CurrentBrickPos[0].y + 3);
+                        Console.WriteLine(flag);
+                        if (!IrotationCollisionCheck(CurrentBrickPos[0].x - 2, CurrentBrickPos[0].y + 3))
+                            return;
+                        IRotation();                      
+                        CurrentBrickPos[0] += new Vector2(-2, 1);
+                        CurrentBrickPos[1] += new Vector2(-1, 0);
+                        CurrentBrickPos[2] += new Vector2(0, -1);
+                        CurrentBrickPos[3] += new Vector2(1, -2);
+
+                        foreach (Vector2 brick in CurrentBrickPos)
+                        {
+                            Status[brick.x, brick.y] = tempCell;
+                        }
+                        CurrentRotationState++;
+                        return;
+
+                    case 2:
+                        //transmission to state 3
+                        sortBricksX();
+                        if (!IrotationCollisionCheck(CurrentBrickPos[0].x, CurrentBrickPos[0].y + 2))
+                            return;
+                        IRotation();
+                        CurrentBrickPos[0] += new Vector2(1, 2);
+                        CurrentBrickPos[1] += new Vector2(0, 1);
+                        CurrentBrickPos[2] += new Vector2(-1, 0);
+                        CurrentBrickPos[3] += new Vector2(-2, -1);
+                        CurrentRotationState++;
+                        foreach (Vector2 brick in CurrentBrickPos)
+                        {
+                            Status[brick.x, brick.y] = tempCell;
+                        }
+                        return;
+                    case 3:
+                        //transmission to state 4
+                        sortBricksY();
+                        if (!IrotationCollisionCheck(CurrentBrickPos[0].x - 1, CurrentBrickPos[0].y + 3))
+                            return;
+                        IRotation();
+                        CurrentBrickPos[0] += new Vector2(-1, 2);
+                        CurrentBrickPos[1] += new Vector2(0, 1);
+                        CurrentBrickPos[2] += new Vector2(1, 0);
+                        CurrentBrickPos[3] += new Vector2(2, -1);
+
+                        foreach (Vector2 brick in CurrentBrickPos)
+                        {
+                            Status[brick.x, brick.y] = tempCell;
+                        }
+                        CurrentRotationState = 0;
+                        return;
+                }
+                #endregion IRotation
+            }
+
+
 
             for (int i = 0; i < 4; i++)
             {

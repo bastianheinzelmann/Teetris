@@ -15,7 +15,7 @@ namespace Teetris
         private const int BoxSizeY = 22; //Größe des Spielfeldes
         private const int BoxSizeX = 10;
 
-        private Cell[,] Status = new Cell[BoxSizeX,BoxSizeY];
+        private Cell[,] Status = new Cell[BoxSizeX, BoxSizeY];
 
         private Texture2D[] BlockTextures;
 
@@ -23,6 +23,7 @@ namespace Teetris
 
         private int HorizontalCoolDown = 0;
         private int CoolDown = 0;
+        private int Timer = 500;
 
         //Input
         KeyboardState kb;
@@ -51,7 +52,7 @@ namespace Teetris
             int whichTetromino = rnd.Next(0, 7);
             int color = rnd.Next(1, 5);
 
-            whichTetromino = 4;
+            //whichTetromino = 4;
             CurrentTetromino = whichTetromino;
 
             //Console.WriteLine(whichTetromino);
@@ -96,7 +97,7 @@ namespace Teetris
                         Status[BoxSizeX / 2 - 2, BoxSizeY - 1] = new Cell(color, true, false); CurrentBrickPos[0] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 1);
                         Status[BoxSizeX / 2 - 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[1] = new Vector2(BoxSizeX / 2 - 2, BoxSizeY - 2);
                         Status[BoxSizeX / 2 - 1, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[2] = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
-                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2 , BoxSizeY - 2);
+                        Status[BoxSizeX / 2, BoxSizeY - 2] = new Cell(color, true, false); CurrentBrickPos[3] = new Vector2(BoxSizeX / 2, BoxSizeY - 2);
                         CurrentTetroCenter = new Vector2(BoxSizeX / 2 - 1, BoxSizeY - 2);
                         break;
                     }
@@ -169,7 +170,7 @@ namespace Teetris
             {
                 for (int x = 0; x < Status.GetLength(0); x++)
                 {
-                    if (Status[x,y] != null)
+                    if (Status[x, y] != null)
                     {
 
                         //Save positions of bricks in a Vector2
@@ -205,7 +206,7 @@ namespace Teetris
                 }
             }
 
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 Cell tempCell = Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y];
                 Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = null;
@@ -231,7 +232,7 @@ namespace Teetris
                 {
                     if (centreX + i < 0 || centreX + i > 9 || CentreY + j > 22 || CentreY + j < 0)
                         return false;
-                
+
 
                     if (Status[centreX + i, CentreY + j] != null)
                         if (!Status[centreX + i, CentreY + j].active)
@@ -285,7 +286,7 @@ namespace Teetris
                 }
                 Vector2 temp = CurrentBrickPos[i];
                 CurrentBrickPos[i] = CurrentBrickPos[min];
-                CurrentBrickPos[min] = temp;   
+                CurrentBrickPos[min] = temp;
             }
         }
 
@@ -358,7 +359,7 @@ namespace Teetris
                         Console.WriteLine(flag);
                         if (!IrotationCollisionCheck(CurrentBrickPos[0].x - 2, CurrentBrickPos[0].y + 3))
                             return;
-                        IRotation();                      
+                        IRotation();
                         CurrentBrickPos[0] += new Vector2(-2, 1);
                         CurrentBrickPos[1] += new Vector2(-1, 0);
                         CurrentBrickPos[2] += new Vector2(0, -1);
@@ -433,7 +434,7 @@ namespace Teetris
 
         public void Move(int direction)
         {
-            foreach(Vector2 brick in CurrentBrickPos)
+            foreach (Vector2 brick in CurrentBrickPos)
             {
                 if (brick.x == 0 && direction == -1)
                 {
@@ -445,9 +446,9 @@ namespace Teetris
                     return;
                 }
 
-                if(Status[brick.x + direction, brick.y] != null)
+                if (Status[brick.x + direction, brick.y] != null)
                 {
-                    if(!Status[brick.x + direction, brick.y].active)
+                    if (!Status[brick.x + direction, brick.y].active)
                     {
                         return;
                     }
@@ -464,7 +465,7 @@ namespace Teetris
 
             for (int i = 0; i < 4; i++)
             {
-                CurrentBrickPos[i].x += direction;               
+                CurrentBrickPos[i].x += direction;
                 Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = tempCell;
             }
 
@@ -472,55 +473,150 @@ namespace Teetris
             CurrentTetroCenter.x += direction;
         }
 
+        bool[] CheckLines()
+        {
+            bool[] result = new bool[Status.GetLength(1) - 2];
+
+            for (int j = 0; j < Status.GetLength(1) - 2; j++)
+            {
+                for (int i = 0; i < Status.GetLength(0); i++)
+                {
+                    if (Status[i, j] == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        if (i == Status.GetLength(0) - 1)
+                            result[j] = true;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        void BrickCorrection(int lines, int pos)
+        {
+            int start = (pos - lines) + 1;
+
+            Cell tempCell;
+
+            for (int j = pos + 1; j < BoxSizeY - 2; j++)
+            {
+                for (int i = 0; i < BoxSizeX; i++)
+                {
+                    if (Status[i, j] != null)
+                    {
+                        tempCell = Status[i, j];
+                        Status[i, j] = null;
+                        Status[i, j - 1] = tempCell;
+                    }
+                }
+            }
+        }
+
+        void RemoveLines()
+        {
+            bool[] fullLines = CheckLines();
+            int lineCounter = 0;
+            for (int j = 0; j < Status.GetLength(1) - 2; j++)
+            {
+                //if (!fullLines[j])
+                //    lineCounter = 0;
+
+                if (fullLines[j])
+                {
+                    //lineCounter++;
+                    for (int i = 0; i < Status.GetLength(0); i++)
+                    {
+                        Status[i, j] = null;
+                    }
+                    BrickCorrection(lineCounter, j);
+                }
+                //if (!fullLines[j + 1] && j + 1 < Status.GetLength(1) - 20)
+                //    BrickCorrection(lineCounter, j);
+            }
+        }
+
+        bool GameOver()
+        {
+
+            for (int i = 0; i < BoxSizeX; i++)
+            {
+                if (Status[i, 20] != null && Status[i, 21] != null)
+                {
+                    if (!Status[i, 20].active || !Status[i, 21].active)
+                        return true;
+                }
+            }
+            return false;
+        }
+
         public void Update(GameTime gameTime)
         {
             kb = Keyboard.GetState();
 
-            HorizontalCoolDown += gameTime.ElapsedGameTime.Milliseconds;
-            CoolDown += gameTime.ElapsedGameTime.Milliseconds;
-
-            if (CoolDown >= 500)
+            if (!GameOver())
             {
-                CheckActiveCells();
-                CoolDown = 0;
+                HorizontalCoolDown += gameTime.ElapsedGameTime.Milliseconds;
+                CoolDown += gameTime.ElapsedGameTime.Milliseconds;
+
+                if (CoolDown >= Timer)
+                {
+                    CheckActiveCells();
+                    CoolDown = 0;
+                }
+
+                // if the brick is landed set landed tor true, and the next brick is falling down
+                if (landed)
+                {
+                    CreateTetrominos();
+                    RemoveLines();
+                    landed = false;
+                }
+
+                if (KeyPressed(Keys.Up))
+                {
+                    Rotate();
+                }
+
+                if (KeyDown(Keys.Down))
+                {
+                    Timer = 50;
+                }
+
+                if (KeyUp(Keys.Down))
+                {
+                    Timer = 500;
+                }
+
+                if (KeyDown(Keys.Left) && HorizontalCoolDown >= 200)
+                {
+                    Move(-1);
+                }
+
+                if (KeyDown(Keys.Right) && HorizontalCoolDown >= 200)
+                {
+                    Move(1);
+                }
             }
 
-            // if the brick is landed set landed tor true, and the next brick is falling down
-            if (landed)
-            {
-                CreateTetrominos();
-                landed = false;
-            }
-            
-            if(KeyPressed(Keys.Up))
-            {
-                Rotate();
-            }
-
-            if(KeyDown(Keys.Left) && HorizontalCoolDown >= 200)
-            {
-                Move(-1);
-            }
-
-            if(KeyDown(Keys.Right) && HorizontalCoolDown >= 200)
-            {
-                Move(1);
-            }
-
-            old_kb = kb;    
+            old_kb = kb;
         }
 
         bool KeyPressed(Keys key) { return kb.IsKeyDown(key) && old_kb.IsKeyUp(key); }
         bool KeyDown(Keys key) { return kb.IsKeyDown(key); }
+        bool KeyUp(Keys key) { return kb.IsKeyUp(key); }
 
         public void Draw(SpriteBatch spriteBatch)
-        {            
+        {
             for (int j = 0; j < Status.GetLength(1) - 2; j++)
             {
                 for (int i = 0; i < Status.GetLength(0); i++)
                 {
                     #region ColorSwitch
-                    if(Status[i,j] != null)
+                    if (Status[i, j] != null)
                     {
                         switch (Status[i, j].color)
                         {

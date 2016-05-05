@@ -17,6 +17,7 @@ namespace Teetris
     {
         Texture2D[] BlockTextures = new Texture2D[4];
         Texture2D BackGround;
+        SpriteFont font;
 
         TetrisBox TheTetrisBox;
 
@@ -27,7 +28,8 @@ namespace Teetris
             BlockTextures[2] = contentManager.Load<Texture2D>("greenBlock");
             BlockTextures[3] = contentManager.Load<Texture2D>("redBlock");
 
-            BackGround = contentManager.Load<Texture2D>("tetBack");
+            BackGround = contentManager.Load<Texture2D>("TetrisBackground");
+            font = contentManager.Load <SpriteFont>("statsFont");
 
             TheTetrisBox = new TetrisBox(BlockTextures);
         }
@@ -41,7 +43,7 @@ namespace Teetris
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(BackGround, new Rectangle(10, 6 + 2 * 32, 32 * 10, 32 * 20), Color.White);
+            spriteBatch.Draw(BackGround, new Rectangle(0,0, 480, 720), Color.White);
             TheTetrisBox.Draw(spriteBatch);
 
             base.Draw(spriteBatch);

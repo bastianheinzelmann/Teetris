@@ -18,6 +18,7 @@ namespace Teetris
         private Cell[,] Status = new Cell[BoxSizeX, BoxSizeY];
 
         private Texture2D[] BlockTextures;
+        private SpriteFont Font;
 
         private int BlockSize = 32; //Größe der Blöcke in Pixel
 
@@ -29,6 +30,11 @@ namespace Teetris
         KeyboardState kb;
         KeyboardState old_kb;
 
+        //Score management
+        int Score;
+        int Level;
+        int Lines;
+
         private Vector2 CurrentTetroCenter;
         private Vector2[] CurrentBrickPos = new Vector2[4];
 
@@ -39,10 +45,14 @@ namespace Teetris
 
         private bool landed = false;
 
-        public TetrisBox(Texture2D[] blockTextures)
+        public TetrisBox(Texture2D[] blockTextures, SpriteFont font)
         {
             BlockTextures = blockTextures;
-            //Field[0, 0] = 3;
+            Font = font;
+
+            Score = 0;
+            Level = 0;
+            Lines = 0;
             CreateTetrominos();
         }
 
@@ -473,6 +483,8 @@ namespace Teetris
             CurrentTetroCenter.x += direction;
         }
 
+
+
         bool[] CheckLines()
         {
             bool[] result = new bool[Status.GetLength(1) - 2];
@@ -488,7 +500,9 @@ namespace Teetris
                     else
                     {
                         if (i == Status.GetLength(0) - 1)
+                        {
                             result[j] = true;
+                        }
                     }
                 }
             }
@@ -527,6 +541,13 @@ namespace Teetris
 
                 if (fullLines[j])
                 {
+                    Score += (Level + 1) * 40; //bei 1 reihe 40, 2 100, 3 300, 4 1200
+                    Lines++;
+                    if(Lines >= 30)
+                    {
+                        Level++;
+                        Lines = 0;
+                    }
                     //lineCounter++;
                     for (int i = 0; i < Status.GetLength(0); i++)
                     {
@@ -645,6 +666,9 @@ namespace Teetris
                     #endregion ColorSwitch
                 }
             }
+
+            spriteBatch.DrawString(Font, Score.ToString(), new Microsoft.Xna.Framework.Vector2(355, 75), Color.White);
+            spriteBatch.DrawString(Font, Level.ToString(), new Microsoft.Xna.Framework.Vector2(355, 185), Color.White);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Teetris
             BackGround = contentManager.Load<Texture2D>("TetrisBackground");
             font = contentManager.Load <SpriteFont>("statsFont");
 
-            TheTetrisBox = new TetrisBox(BlockTextures);
+            TheTetrisBox = new TetrisBox(BlockTextures, font);
         }
 
         public override void Update(GameTime theTime)

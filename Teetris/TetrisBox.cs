@@ -24,7 +24,7 @@ namespace Teetris
 
         private int HorizontalCoolDown = 0;
         private int CoolDown = 0;
-        private int Timer = 500;
+        private int Timer = 1000;
 
         //Input
         KeyboardState kb;
@@ -222,9 +222,13 @@ namespace Teetris
                 Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y] = null;
                 Status[CurrentBrickPos[i].x, CurrentBrickPos[i].y - 1] = tempCell;
                 CurrentBrickPos[i].y--;
+                
                 //CurrentTetroCenter.y--;
             }
-
+            if (KeyDown(Keys.Down))
+            {
+                Score++;
+            }
             CurrentTetroCenter.y--;
         }
 
@@ -536,27 +540,49 @@ namespace Teetris
             int lineCounter = 0;
             for (int j = 0; j < Status.GetLength(1) - 2; j++)
             {
-                //if (!fullLines[j])
-                //    lineCounter = 0;
+                if (!fullLines[j])
+                {
+                    while(lineCounter >= 0)
+                    {
+                        switch (lineCounter)
+                        {
+                            case 0:
+                                break;
+                            case 1:
+                                Score += (Level + 1) * 40;
+                                break;
+                            case 2:
+                                Score += (Level + 1) * 100;
+                                break;
+                            case 3:
+                                Score += (Level + 1) * 300;
+                                break;
+                            case 4:
+                                Score += (Level + 1) * 1200;
+                                break;
+                        }
+                        lineCounter -= 4;
+                    }
+                    
+                    lineCounter = 0;
+                }
 
                 if (fullLines[j])
                 {
-                    Score += (Level + 1) * 40; //bei 1 reihe 40, 2 100, 3 300, 4 1200
-                    Lines++;
-                    if(Lines >= 30)
+                    //Score += (Level + 1) * 40; //bei 1 reihe 40, 2 100, 3 300, 4 1200
+                    Lines++; //Alle bereits gelöschten Lines in diesem level
+                    if(Lines >= 20)
                     {
                         Level++;
                         Lines = 0;
                     }
-                    //lineCounter++;
+                    lineCounter++;
                     for (int i = 0; i < Status.GetLength(0); i++)
                     {
                         Status[i, j] = null;
                     }
                     BrickCorrection(lineCounter, j);
                 }
-                //if (!fullLines[j + 1] && j + 1 < Status.GetLength(1) - 20)
-                //    BrickCorrection(lineCounter, j);
             }
         }
 
@@ -580,6 +606,15 @@ namespace Teetris
 
             if (!GameOver())
             {
+                if (KeyDown(Keys.Down))
+                {
+                    Timer = 50;
+                }
+                else
+                {
+                    Timer = 1000 - Level * 50;
+                }
+
                 HorizontalCoolDown += gameTime.ElapsedGameTime.Milliseconds;
                 CoolDown += gameTime.ElapsedGameTime.Milliseconds;
 
@@ -602,14 +637,9 @@ namespace Teetris
                     Rotate();
                 }
 
-                if (KeyDown(Keys.Down))
-                {
-                    Timer = 50;
-                }
-
                 if (KeyUp(Keys.Down))
                 {
-                    Timer = 500;
+                    Timer = 1000;
                 }
 
                 if (KeyDown(Keys.Left) && HorizontalCoolDown >= 200)
